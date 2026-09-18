@@ -241,6 +241,10 @@ const frontendOrigins = [
   ...configuredFrontendOrigins,
 ]
 
+const isProjectVercelDeployment = (origin) =>
+  /^https:\/\/vaishnorakraftfrontend-[a-z0-9-]+\.vercel\.app$/i
+    .test(origin)
+
 if (process.env.NODE_ENV !== 'production') {
   frontendOrigins.push(
     'http://localhost:5173',
@@ -280,7 +284,12 @@ app.use(
     origin(origin, callback) {
       // Requests without an Origin header (health checks, curl) are safe.
       // Browser requests must come from a configured frontend deployment.
-      callback(null, !origin || frontendOrigins.includes(origin))
+      callback(
+        null,
+        !origin ||
+          frontendOrigins.includes(origin) ||
+          isProjectVercelDeployment(origin)
+      )
     },
     credentials: true,
   })
