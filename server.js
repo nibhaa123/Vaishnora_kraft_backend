@@ -226,7 +226,7 @@ const port =
 // frontend.
 const frontendOrigin =
   process.env.FRONTEND_ORIGIN ||
-  'https://frontend-epfq2grcx-vaishnora-kraft.vercel.app'
+  'https://vaishnorakraftfrontend.vercel.app'
 
 // ---------------------------------------------------------
 // MULTER
@@ -255,9 +255,6 @@ const upload = multer({
 // MIDDLEWARE
 // ---------------------------------------------------------
 
-// Single CORS config for the whole app (the old code had
-// this registered twice - once here and once again after
-// the root route - which was redundant and confusing).
 app.use(
   cors({
     origin: frontendOrigin,
