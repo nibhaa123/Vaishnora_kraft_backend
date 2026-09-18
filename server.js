@@ -22,7 +22,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 dotenv.config({
-  path: path.join(__dirname, '..', '.env'),
+  path: path.join(__dirname, '.env'),
 })
 
 // ---------------------------------------------------------
@@ -224,9 +224,21 @@ const port =
 // never has one, so a trailing "/" here would silently
 // break CORS matching and block every request from the
 // frontend.
-const frontendOrigin =
+const frontendOrigins = (
+  process.env.FRONTEND_ORIGINS ||
   process.env.FRONTEND_ORIGIN ||
   'https://vaishnorakraftfrontend.vercel.app'
+)
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
+if (process.env.NODE_ENV !== 'production') {
+  frontendOrigins.push(
+    'http://localhost:5173',
+    'http://127.0.0.1:5173'
+  )
+}
 
 // ---------------------------------------------------------
 // MULTER
@@ -257,7 +269,11 @@ const upload = multer({
 
 app.use(
   cors({
-    origin: frontendOrigin,
+    origin(origin, callback) {
+      // Requests without an Origin header (health checks, curl) are safe.
+      // Browser requests must come from a configured frontend deployment.
+      callback(null, !origin || frontendOrigins.includes(origin))
+    },
     credentials: true,
   })
 )
