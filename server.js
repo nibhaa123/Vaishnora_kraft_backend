@@ -224,14 +224,22 @@ const port =
 // never has one, so a trailing "/" here would silently
 // break CORS matching and block every request from the
 // frontend.
-const frontendOrigins = (
+const productionFrontendOrigin =
+  'https://vaishnorakraftfrontend.vercel.app'
+
+const configuredFrontendOrigins = (
   process.env.FRONTEND_ORIGINS ||
   process.env.FRONTEND_ORIGIN ||
-  'https://vaishnorakraftfrontend.vercel.app'
+  ''
 )
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean)
+
+const frontendOrigins = [
+  productionFrontendOrigin,
+  ...configuredFrontendOrigins,
+]
 
 if (process.env.NODE_ENV !== 'production') {
   frontendOrigins.push(
